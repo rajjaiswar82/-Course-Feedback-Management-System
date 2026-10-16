@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Submitted Feedback | Course Feedback</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">Course Feedback</div>
+      <nav>
+        <a th:href="@{/feedback/new}" class="nav-button">+ Submit feedback</a>
+      </nav>
+    </header>
+    <main class="container">
+      <section class="hero">
+        <p class="eyebrow">FEEDBACK MANAGEMENT</p>
+        <h1>Submitted feedback</h1>
+        <p class="muted">Review the feedback records submitted in this demo.</p>
+      </section>
+
+      <div
+        class="success"
+        th:if="${successMessage}"
+        th:text="${successMessage}"
+      ></div>
+      <div class="empty panel" th:if="${#lists.isEmpty(feedbackList)}">
+        <h2>No feedback yet</h2>
+        <p class="muted">Be the first to share feedback about a course.</p>
+        <a class="button link-button" th:href="@{/feedback/new}"
+          >Submit first feedback</a
+        >
+      </div>
+
+      <section class="feedback-grid" th:if="${!#lists.isEmpty(feedbackList)}">
+        <article class="panel feedback-card" th:each="item : ${feedbackList}">
+          <div class="card-heading">
+            <div>
+              <p class="eyebrow" th:text="${item.courseName}">Course</p>
+              <h2 th:text="${item.studentName}">Student</h2>
+            </div>
+            <span class="status" th:text="${item.status}">SUBMITTED</span>
+          </div>
+          <p class="rating">
+            <span th:text="${item.rating}">5</span> / 5 rating
+          </p>
+          <p class="comments" th:text="${item.comments}">Comments</p>
+          <p
+            class="timestamp"
+            th:text="${#temporals.format(item.submittedAt, 'dd MMM yyyy, HH:mm')}"
+          >
+            Submitted time
+          </p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
