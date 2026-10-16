@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Submit Feedback | Course Feedback</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<header class="topbar">
+    <div class="brand">Course Feedback</div>
+    <nav><a th:href="@{/feedback}">View submissions</a></nav>
+</header>
+<main class="container">
+    <section class="hero">
+        <p class="eyebrow">STUDENT PORTAL</p>
+        <h1>Share your course feedback</h1>
+        <p class="muted">Your feedback helps improve teaching and learning experiences.</p>
+    </section>
+
+    <form class="panel form" th:action="@{/feedback}" th:object="${feedbackForm}" method="post">
+        <div class="field">
+            <label for="studentName">Student name</label>
+            <input id="studentName" type="text" th:field="*{studentName}" maxlength="100" required>
+            <small class="error" th:if="${#fields.hasErrors('studentName')}" th:errors="*{studentName}"></small>
+        </div>
+        <div class="field">
+            <label for="courseName">Course name</label>
+            <input id="courseName" type="text" th:field="*{courseName}" maxlength="120" placeholder="e.g. Database Management Systems" required>
+            <small class="error" th:if="${#fields.hasErrors('courseName')}" th:errors="*{courseName}"></small>
+        </div>
+        <div class="field">
+            <label for="rating">Rating</label>
+            <select id="rating" th:field="*{rating}" required>
+                <option value="">Choose a rating</option>
+                <option value="5">5 — Excellent</option>
+                <option value="4">4 — Very good</option>
+                <option value="3">3 — Good</option>
+                <option value="2">2 — Fair</option>
+                <option value="1">1 — Needs improvement</option>
+            </select>
+            <small class="error" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></small>
+        </div>
+        <div class="field">
+            <label for="comments">Comments</label>
+            <textarea id="comments" th:field="*{comments}" rows="5" maxlength="2000" placeholder="What worked well? What could be improved?" required></textarea>
+            <small class="error" th:if="${#fields.hasErrors('comments')}" th:errors="*{comments}"></small>
+        </div>
+        <button type="submit" class="button">Submit feedback</button>
+    </form>
+</main>
+</body>
+</html>
