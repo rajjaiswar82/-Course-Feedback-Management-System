@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Edit Feedback | Course Feedback</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">Course Feedback</div>
+      <nav>
+        <a th:href="@{/feedback}" class="nav-button">Back to feedback</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="hero">
+        <p class="eyebrow">FEEDBACK MANAGEMENT</p>
+        <h1>Edit feedback</h1>
+        <p class="muted">Update the selected feedback record.</p>
+      </section>
+
+      <section class="panel">
+        <form
+          th:action="@{/feedback/update/{id}(id=${feedbackId})}"
+          th:object="${feedbackForm}"
+          method="post"
+        >
+          <div>
+            <label for="studentName">Student name</label>
+            <input
+              id="studentName"
+              type="text"
+              th:field="*{studentName}"
+              required
+              maxlength="100"
+            />
+            <p class="error" th:errors="*{studentName}"></p>
+          </div>
+
+          <div>
+            <label for="courseName">Course name</label>
+            <input
+              id="courseName"
+              type="text"
+              th:field="*{courseName}"
+              required
+              maxlength="120"
+            />
+            <p class="error" th:errors="*{courseName}"></p>
+          </div>
+
+          <div>
+            <label for="rating">Rating</label>
+            <select id="rating" th:field="*{rating}" required>
+              <option value="">Select a rating</option>
+              <option value="1">1 - Poor</option>
+              <option value="2">2 - Fair</option>
+              <option value="3">3 - Good</option>
+              <option value="4">4 - Very good</option>
+              <option value="5">5 - Excellent</option>
+            </select>
+            <p class="error" th:errors="*{rating}"></p>
+          </div>
+
+          <div>
+            <label for="comments">Comments</label>
+            <textarea
+              id="comments"
+              th:field="*{comments}"
+              required
+              maxlength="2000"
+            ></textarea>
+            <p class="error" th:errors="*{comments}"></p>
+          </div>
+
+          <button type="submit" class="button">Save changes</button>
+          <a th:href="@{/feedback}" class="button link-button">Cancel</a>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>
