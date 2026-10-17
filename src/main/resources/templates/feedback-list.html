@@ -1,5 +1,6 @@
-<!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,14 +11,16 @@
     <header class="topbar">
       <div class="brand">Course Feedback</div>
       <nav>
+        <a th:href="@{/dashboard}" class="nav-button">Dashboard</a>
         <a th:href="@{/feedback/new}" class="nav-button">+ Submit feedback</a>
       </nav>
     </header>
+
     <main class="container">
       <section class="hero">
         <p class="eyebrow">FEEDBACK MANAGEMENT</p>
         <h1>Submitted feedback</h1>
-        <p class="muted">Review the feedback records submitted in this demo.</p>
+        <p class="muted">Search, review, update, and manage course feedback.</p>
       </section>
 
       <div
@@ -25,12 +28,31 @@
         th:if="${successMessage}"
         th:text="${successMessage}"
       ></div>
+
+      <!-- Search by student or course -->
+      <section class="panel">
+        <form th:action="@{/feedback}" method="get">
+          <label for="keyword">Search feedback</label>
+          <div>
+            <input
+              id="keyword"
+              type="text"
+              name="keyword"
+              placeholder="Student name or course name"
+              th:value="${keyword}"
+            />
+            <button type="submit" class="button">Search</button>
+            <a th:href="@{/feedback}" class="button link-button">Clear</a>
+          </div>
+        </form>
+      </section>
+
       <div class="empty panel" th:if="${#lists.isEmpty(feedbackList)}">
-        <h2>No feedback yet</h2>
-        <p class="muted">Be the first to share feedback about a course.</p>
-        <a class="button link-button" th:href="@{/feedback/new}"
-          >Submit first feedback</a
-        >
+        <h2>No feedback found</h2>
+        <p class="muted">Try another search or submit new feedback.</p>
+        <a class="button link-button" th:href="@{/feedback/new}">
+          Submit feedback
+        </a>
       </div>
 
       <section class="feedback-grid" th:if="${!#lists.isEmpty(feedbackList)}">
@@ -42,16 +64,77 @@
             </div>
             <span class="status" th:text="${item.status}">SUBMITTED</span>
           </div>
+
           <p class="rating">
             <span th:text="${item.rating}">5</span> / 5 rating
           </p>
+
           <p class="comments" th:text="${item.comments}">Comments</p>
+
           <p
             class="timestamp"
             th:text="${#temporals.format(item.submittedAt, 'dd MMM yyyy, HH:mm')}"
           >
             Submitted time
           </p>
+
+          <div class="card-actions">
+            <a
+              class="button link-button"
+              th:href="@{/feedback/edit/{id}(id=${item.id})}"
+            >
+              Edit
+            </a>
+                <form th:action="@{/feedback/delete/{id}(id=${item.id})}"
+                      method="post"
+                      onsubmit="return confirm('Are you sure you want to delete this feedback?');">
+                   <button type="submit" class="button">
+              Delete
+                   </button>
+               </form>
+           </div>
+            <form
+              th:action="@{/feedback/delete/{id}(id=${item.id})}"
+              method="post"
+              onsubmit="
+                return confirm(
+                  'Are you sure you want to delete this feedback?',
+                );
+              "
+            >
+              <button type="submit" class="button">Delete</button>
+            </form>
+          </div>
+
+          <form
+            th:action="@{/feedback/status/{id}(id=${item.id})}"
+            method="post"
+          >
+            <label th:for="${'status-' + item.id}">Update status</label>
+            <div>
+              <select th:id="${'status-' + item.id}" name="status" required>
+                <option
+                  value="SUBMITTED"
+                  th:selected="${item.status.name() == 'SUBMITTED'}"
+                >
+                  Submitted
+                </option>
+                <option
+                  value="REVIEWED"
+                  th:selected="${item.status.name() == 'REVIEWED'}"
+                >
+                  Reviewed
+                </option>
+                <option
+                  value="RESOLVED"
+                  th:selected="${item.status.name() == 'RESOLVED'}"
+                >
+                  Resolved
+                </option>
+              </select>
+              <button type="submit" class="button">Save status</button>
+            </div>
+          </form>
         </article>
       </section>
     </main>

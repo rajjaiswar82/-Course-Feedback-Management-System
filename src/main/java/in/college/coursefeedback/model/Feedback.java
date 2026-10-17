@@ -1,3 +1,4 @@
+
 package in.college.coursefeedback.model;
 
 import jakarta.persistence.*;
@@ -6,6 +7,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "feedback")
 public class Feedback {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,11 +31,13 @@ public class Feedback {
     @Column(nullable = false)
     private LocalDateTime submittedAt;
 
+    // Required by JPA
     protected Feedback() {
-        // Required by JPA.
     }
 
-    public Feedback(String studentName, String courseName, Integer rating, String comments) {
+    // Constructor for submitting feedback
+    public Feedback(String studentName, String courseName,
+                    Integer rating, String comments) {
         this.studentName = studentName;
         this.courseName = courseName;
         this.rating = rating;
@@ -44,15 +48,62 @@ public class Feedback {
 
     @PrePersist
     void beforeInsert() {
-        if (submittedAt == null) submittedAt = LocalDateTime.now();
-        if (status == null) status = FeedbackStatus.SUBMITTED;
+        if (submittedAt == null) {
+            submittedAt = LocalDateTime.now();
+        }
+
+        if (status == null) {
+            status = FeedbackStatus.SUBMITTED;
+        }
     }
 
-    public Long getId() { return id; }
-    public String getStudentName() { return studentName; }
-    public String getCourseName() { return courseName; }
-    public Integer getRating() { return rating; }
-    public String getComments() { return comments; }
-    public FeedbackStatus getStatus() { return status; }
-    public LocalDateTime getSubmittedAt() { return submittedAt; }
+    // Getters
+    public Long getId() {
+        return id;
+    }
+
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public FeedbackStatus getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
+    }
+
+    // Setters for updating feedback
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    public void setStatus(FeedbackStatus status) {
+        this.status = status;
+    }
 }

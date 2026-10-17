@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard | Course Feedback</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">Course Feedback</div>
+      <nav>
+        <a th:href="@{/feedback}" class="nav-button">View feedback</a>
+        <a th:href="@{/feedback/new}" class="nav-button">+ Submit feedback</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="hero">
+        <p class="eyebrow">ANALYTICS OVERVIEW</p>
+        <h1>Feedback Dashboard</h1>
+        <p class="muted">A summary of feedback submitted for your courses.</p>
+      </section>
+
+      <section class="feedback-grid">
+        <article class="panel">
+          <p class="eyebrow">TOTAL FEEDBACK</p>
+          <h2 th:text="${totalFeedback}">0</h2>
+          <p class="muted">All feedback records</p>
+        </article>
+
+        <article class="panel">
+          <p class="eyebrow">SUBMITTED</p>
+          <h2 th:text="${submittedCount}">0</h2>
+          <p class="muted">Awaiting review</p>
+        </article>
+
+        <article class="panel">
+          <p class="eyebrow">REVIEWED</p>
+          <h2 th:text="${reviewedCount}">0</h2>
+          <p class="muted">Feedback reviewed</p>
+        </article>
+
+        <article class="panel">
+          <p class="eyebrow">AVERAGE RATING</p>
+          <h2 th:text="${#numbers.formatDecimal(averageRating, 1, 2)}">0.00</h2>
+          <p class="muted">Out of 5</p>
+        </article>
+      </section>
+
+      <section class="panel">
+        <h2>Manage feedback</h2>
+        <p class="muted">
+          Open the feedback list to search records, edit submissions, delete
+          records, and update their workflow status.
+        </p>
+        <a th:href="@{/feedback}" class="button link-button">
+          Manage feedback
+        </a>
+      </section>
+    </main>
+  </body>
+</html>
