@@ -39,3 +39,5 @@ Then open a GitHub pull request with base `dev` and compare `feature/feedback-wo
 
 ## Limitations
 This is an initial feature slice for a course project, not a production-ready system. Authentication, authorization, duplicate-submission rules, audit logging, CSRF/security hardening review, and admin review/close transitions are future work. H2 data is temporary unless PostgreSQL is configured.
+
+# Jenkins CI test - automatic build trigger
