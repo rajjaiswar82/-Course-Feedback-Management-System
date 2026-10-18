@@ -107,10 +107,9 @@ pipeline {
                     
                     // Create environment-specific configuration
                     bat """
-                        echo server.port=${params.APP_PORT} > "${DEPLOY_DIR}\\application-${params.DEPLOY_ENV}.properties"
-                        echo spring.profiles.active=${params.DEPLOY_ENV} >> "${DEPLOY_DIR}\\application-${params.DEPLOY_ENV}.properties"
-                        echo app.environment=${params.DEPLOY_ENV} >> "${DEPLOY_DIR}\\application-${params.DEPLOY_ENV}.properties"
-                        echo info.app.environment=${params.DEPLOY_ENV} >> "${DEPLOY_DIR}\\application-${params.DEPLOY_ENV}.properties"
+                        echo server.port=${params.APP_PORT} > "${DEPLOY_DIR}\\application.properties"
+                        echo app.environment=${params.DEPLOY_ENV} >> "${DEPLOY_DIR}\\application.properties"
+                        echo info.app.environment=${params.DEPLOY_ENV} >> "${DEPLOY_DIR}\\application.properties"
                     """
                     
                     // Start the application in background
@@ -118,7 +117,7 @@ pipeline {
                         @echo off
                         cd "${DEPLOY_DIR}"
                         echo Starting application in ${params.DEPLOY_ENV} environment...
-                        start /B java -jar -Dspring.profiles.active=${params.DEPLOY_ENV} -Dserver.port=${params.APP_PORT} "${ARTIFACT_NAME}" > app-${params.DEPLOY_ENV}.log 2>&1
+                        start /B java -jar -Dserver.port=${params.APP_PORT} "${ARTIFACT_NAME}" > app-${params.DEPLOY_ENV}.log 2>&1
                         echo Application started successfully
                     """
                     
