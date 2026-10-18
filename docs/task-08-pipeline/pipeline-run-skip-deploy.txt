@@ -1,0 +1,89 @@
+Jenkins Pipeline Console Output - SKIP_DEPLOY Test
+==================================================
+
+Started by user Raj Jaiswar
+Obtained Jenkinsfile from git https://github.com/rajjaiswar82/-Course-Feedback-Management-System.git
+
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in C:\Users\RAJ JAISWAR\.jenkins\workspace\course-feedback-pipeline
+
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Checking out Revision 04fedc2d0d76c0f6d38112f4caf2f65405bd64cc
+Commit message: "fix: remove spring.profiles.active from config file"
+[Pipeline] }
+
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] echo
+Checking out source code from SCM...
+[Pipeline] checkout
+Checkout completed for branch: origin/feature/task-08-jenkins-pipeline-deploy
+[Pipeline] }
+
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] echo
+Compiling the application...
+[Pipeline] bat
+[INFO] --- compiler:3.14.0:compile (default-compile) @ course-feedback-management-system ---
+[INFO] Compiling 8 source files with javac [debug parameters release 21] to target\classes
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.230 s
+[INFO] Finished at: 2026-10-18T15:04:38+05:30
+[Pipeline] echo
+Build compilation completed successfully
+[Pipeline] }
+
+[Pipeline] stage
+[Pipeline] { (Package)
+[Pipeline] echo
+Packaging the application...
+[Pipeline] bat
+[INFO] --- spring-boot:3.5.6:repackage (repackage) @ course-feedback-management-system ---
+[INFO] Building jar: C:\Users\RAJ JAISWAR\.jenkins\workspace\course-feedback-pipeline\target\course-feedback-management-system-0.0.1-SNAPSHOT.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.708 s
+[INFO] Finished at: 2026-10-18T15:04:44+05:30
+[Pipeline] echo
+Application packaged successfully
+[Pipeline] archiveArtifacts
+Archiving artifacts
+Recording fingerprints
+[Pipeline] echo
+Artifact archived: course-feedback-management-system-0.0.1-SNAPSHOT.jar
+[Pipeline] }
+
+[Pipeline] stage
+[Pipeline] { (Deploy)
+*** Stage "Deploy" skipped due to when conditional ***
+[Pipeline] }
+
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+Pipeline execution finished.
+[Pipeline] echo
+✅ Pipeline completed successfully!
+[Pipeline] echo
+Environment: test
+[Pipeline] echo
+Application URL: http://localhost:8081
+[Pipeline] }
+
+[Pipeline] End of Pipeline
+Finished: SUCCESS
+
+===============================================
+KEY EVIDENCE: Deploy stage was SKIPPED when SKIP_DEPLOY parameter was set to true.
+This proves the parameterized deployment conditional logic works correctly.
+===============================================

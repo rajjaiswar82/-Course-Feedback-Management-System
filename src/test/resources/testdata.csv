@@ -1,0 +1,11 @@
+testCase,studentName,courseName,rating,comments,expectedOutcome
+valid_submission_1,John Smith,Database Management Systems,5,Excellent course with practical examples. The professor explained complex topics clearly.,SUCCESS
+valid_submission_2,Sarah Johnson,Web Development Fundamentals,4,Good course overall. More hands-on projects would be beneficial.,SUCCESS
+valid_submission_3,Michael Chen,Software Engineering Principles,3,Average course. Content was okay but delivery could be improved.,SUCCESS
+valid_search_data,Emma Wilson,Cloud Computing and DevOps,5,Outstanding course! Learned a lot about modern cloud practices.,SUCCESS
+empty_student_name,,Database Systems,5,This should fail validation,VALIDATION_ERROR
+empty_course_name,Invalid User,,4,This should fail validation,VALIDATION_ERROR
+invalid_rating_high,Test User,Test Course,6,Rating too high,VALIDATION_ERROR
+invalid_rating_low,Test User,Test Course,0,Rating too low,VALIDATION_ERROR
+empty_comments,Test User,Test Course,3,,VALIDATION_ERROR
+all_fields_empty,,,,,VALIDATION_ERROR

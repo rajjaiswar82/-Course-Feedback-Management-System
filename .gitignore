@@ -12,3 +12,7 @@ Thumbs.db
 !.env.example
 application-local.properties
 application-local.yml
+# Selenium test artifacts (generated during test runs)
+target/screenshots/
+target/surefire-reports/
+target/site/
