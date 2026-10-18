@@ -288,18 +288,6 @@ pipeline {
                     echo "Archiving test screenshots and artifacts..."
                     archiveArtifacts artifacts: '**/target/screenshots/**, **/target/surefire-reports/**', allowEmptyArchive: true
                     
-                    // Publish HTML test report (if exists)
-                    echo "Publishing HTML test report..."
-                    publishHTML([
-                        allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'target/surefire-reports',
-                        reportFiles: 'index.html',
-                        reportName: 'Selenium Test Report',
-                        reportTitles: 'Selenium UI Tests'
-                    ])
-                    
                     // Stop TEST environment application
                     echo "Cleaning up TEST environment..."
                     bat """
