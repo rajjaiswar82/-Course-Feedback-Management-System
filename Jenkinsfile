@@ -126,7 +126,7 @@ pipeline {
                     bat """
                         @echo off
                         echo Waiting for application to start...
-                        timeout /t 10 /nobreak
+                        ping 127.0.0.1 -n 11 > nul
                     """
                     
                     echo "========================================="
