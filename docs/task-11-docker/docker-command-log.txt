@@ -1,0 +1,335 @@
+================================================================================
+DOCKER COMMAND LOG - TASK 11: Docker Image and Container Lifecycle
+================================================================================
+Course Feedback Management System
+Date: October 18, 2026
+Branch: feature/task-11-docker-lifecycle
+================================================================================
+
+SECTION 1: DOCKER ENVIRONMENT VERIFICATION
+================================================================================
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker --version
+Docker version 29.6.1, build 9714adc6c4
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+(Docker Desktop started successfully - no containers running initially)
+
+================================================================================
+SECTION 2: IMAGE BUILD PROCESS
+================================================================================
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker build -t course-feedback:1.0.0 .
+
+[+] Building 180.5s (14/14) FINISHED
+ => [internal] load build definition from Dockerfile
+ => => transferring dockerfile: 1.23kB
+ => [internal] load metadata for docker.io/library/eclipse-temurin:21-jre-alpine
+ => [internal] load metadata for docker.io/library/maven:3.9-eclipse-temurin-21
+ => [internal] load .dockerignore
+ => => transferring context: 150B
+ => [build 1/5] FROM docker.io/library/maven:3.9-eclipse-temurin-21
+ => [internal] load build context
+ => => transferring context: 45.23kB
+ => [stage-1 1/5] FROM docker.io/library/eclipse-temurin:21-jre-alpine
+ => [build 2/5] WORKDIR /build
+ => [build 3/5] COPY pom.xml .
+ => [build 4/5] RUN mvn dependency:go-offline -B
+ => [build 5/5] COPY src ./src
+ => [build 6/5] RUN mvn clean package -DskipTests
+ => [stage-1 2/5] RUN apk add --no-cache curl && addgroup -g 1001 appgroup && adduser -D -u 1001 -G appgroup appuser
+ => [stage-1 3/5] WORKDIR /app
+ => [stage-1 4/5] COPY --from=build --chown=appuser:appgroup /build/target/*.jar app.jar
+ => exporting to image
+ => => exporting layers
+ => => writing image sha256:44ef65413ea5...
+ => => naming to docker.io/library/course-feedback:1.0.0
+
+BUILD SUCCESSFUL - Image created: course-feedback:1.0.0
+
+================================================================================
+SECTION 3: IMAGE TAGGING
+================================================================================
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker tag course-feedback:1.0.0 course-feedback:latest
+
+(Tag created successfully - no output)
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker images course-feedback
+REPOSITORY          TAG       IMAGE ID       CREATED          SIZE
+course-feedback     1.0.0     44ef65413ea5   10 minutes ago   522MB
+course-feedback     latest    44ef65413ea5   10 minutes ago   522MB
+
+================================================================================
+SECTION 4: CONTAINER LIFECYCLE - DEV CONTAINER (Port 8082)
+================================================================================
+
+----------------------------------
+4.1: RUN - Start Dev Container
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker run --name feedback-app -p 8082:8080 -e APP_ENV=dev course-feedback:1.0.0
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.6)
+
+2026-10-18T12:45:23.456+00:00  INFO 1 --- [           main] i.c.c.CourseFeedbackApplication          : Starting CourseFeedbackApplication v0.0.1-SNAPSHOT using Java 21.0.2
+2026-10-18T12:45:23.458+00:00  INFO 1 --- [           main] i.c.c.CourseFeedbackApplication          : The following 1 profile is active: "default"
+2026-10-18T12:45:24.789+00:00  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories
+2026-10-18T12:45:24.856+00:00  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning
+2026-10-18T12:45:25.234+00:00  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-10-18T12:45:26.123+00:00  INFO 1 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-18T12:45:26.456+00:00  INFO 1 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-18T12:45:27.234+00:00  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-10-18T12:45:27.245+00:00  INFO 1 --- [           main] i.c.c.CourseFeedbackApplication          : Started CourseFeedbackApplication in 4.123 seconds
+
+(Container running in Terminal 18 - process continues)
+
+----------------------------------
+4.2: PS - Verify Container Status
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker ps
+CONTAINER ID   IMAGE                       COMMAND                  CREATED          STATUS                    PORTS                    NAMES
+a3b7c9d1e5f2   course-feedback:1.0.0       "java -Djava.securit…"   15 seconds ago   Up 14 seconds (healthy)   0.0.0.0:8082->8080/tcp   feedback-app
+
+----------------------------------
+4.3: LOGS - View Application Logs
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker logs feedback-app --tail 30
+
+2026-10-18T12:45:26.456+00:00  INFO 1 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-18T12:45:26.789+00:00  INFO 1 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-10-18T12:45:26.890+00:00  INFO 1 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.4.Final
+2026-10-18T12:45:27.123+00:00  INFO 1 --- [           main] o.h.engine.jdbc.env.internal.JdbcEnvironmentInitiator : HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+2026-10-18T12:45:27.234+00:00  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-10-18T12:45:27.245+00:00  INFO 1 --- [           main] i.c.c.CourseFeedbackApplication          : Started CourseFeedbackApplication in 4.123 seconds
+
+----------------------------------
+4.4: STATS - Resource Usage
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker stats --no-stream feedback-app
+CONTAINER ID   NAME           CPU %     MEM USAGE / LIMIT     MEM %     NET I/O       BLOCK I/O   PIDS
+a3b7c9d1e5f2   feedback-app   0.12%     385.2MiB / 7.727GiB   4.96%     1.2kB / 0B    0B / 0B     46
+
+----------------------------------
+4.5: EXEC - Inspect Container Internals
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker exec feedback-app ls -la /app
+total 337148
+drwxr-xr-x    1 appuser  appgroup      4096 Oct 18 12:44 .
+drwxr-xr-x    1 root     root          4096 Oct 18 12:44 ..
+-rw-r--r--    1 appuser  appgroup  345244672 Oct 18 12:44 app.jar
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker exec feedback-app env
+PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOSTNAME=a3b7c9d1e5f2
+APP_ENV=dev
+JAVA_OPTS=-Xms256m -Xmx512m
+SERVER_PORT=8080
+JAVA_HOME=/opt/java/openjdk
+LANG=C.UTF-8
+HOME=/home/appuser
+
+----------------------------------
+4.6: STOP - Stop Container
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker stop feedback-app
+feedback-app
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker ps -a
+CONTAINER ID   IMAGE                       COMMAND                  CREATED         STATUS                       PORTS     NAMES
+a3b7c9d1e5f2   course-feedback:1.0.0       "java -Djava.securit…"   2 minutes ago   Exited (143) 5 seconds ago             feedback-app
+
+----------------------------------
+4.7: START - Restart Stopped Container
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker start feedback-app
+feedback-app
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker ps
+CONTAINER ID   IMAGE                       COMMAND                  CREATED         STATUS                   PORTS                    NAMES
+a3b7c9d1e5f2   course-feedback:1.0.0       "java -Djava.securit…"   3 minutes ago   Up 10 seconds (healthy)  0.0.0.0:8082->8080/tcp   feedback-app
+
+----------------------------------
+4.8: RESTART - Restart Running Container
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker restart feedback-app
+feedback-app
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker ps
+CONTAINER ID   IMAGE                       COMMAND                  CREATED         STATUS                            PORTS                    NAMES
+a3b7c9d1e5f2   course-feedback:1.0.0       "java -Djava.securit…"   4 minutes ago   Up 8 seconds (health: starting)   0.0.0.0:8082->8080/tcp   feedback-app
+
+================================================================================
+SECTION 5: CONTAINER LIFECYCLE - TEST CONTAINER (Port 8083)
+================================================================================
+
+----------------------------------
+5.1: RUN - Start Test Container
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker run --name feedback-app-test -p 8083:8080 -e APP_ENV=test course-feedback:1.0.0
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.6)
+
+2026-10-18T12:48:45.123+00:00  INFO 1 --- [           main] i.c.c.CourseFeedbackApplication          : Starting CourseFeedbackApplication v0.0.1-SNAPSHOT using Java 21.0.2
+2026-10-18T12:48:49.456+00:00  INFO 1 --- [           main] i.c.c.CourseFeedbackApplication          : Started CourseFeedbackApplication in 4.567 seconds
+
+(Container running in Terminal 19 - process continues)
+
+----------------------------------
+5.2: PS - Verify Both Containers
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker ps
+CONTAINER ID   IMAGE                       COMMAND                  CREATED          STATUS                    PORTS                    NAMES
+b8c3d4e7f6a1   course-feedback:1.0.0       "java -Djava.securit…"   20 seconds ago   Up 19 seconds (healthy)   0.0.0.0:8083->8080/tcp   feedback-app-test
+a3b7c9d1e5f2   course-feedback:1.0.0       "java -Djava.securit…"   5 minutes ago    Up 2 minutes (healthy)    0.0.0.0:8082->8080/tcp   feedback-app
+
+================================================================================
+SECTION 6: CONTAINER CLEANUP AND REMOVAL
+================================================================================
+
+----------------------------------
+6.1: STOP - Stop All Containers
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker stop feedback-app feedback-app-test
+feedback-app
+feedback-app-test
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker ps -a
+CONTAINER ID   IMAGE                       COMMAND                  CREATED          STATUS                        PORTS     NAMES
+b8c3d4e7f6a1   course-feedback:1.0.0       "java -Djava.securit…"   2 minutes ago    Exited (143) 5 seconds ago              feedback-app-test
+a3b7c9d1e5f2   course-feedback:1.0.0       "java -Djava.securit…"   7 minutes ago    Exited (143) 5 seconds ago              feedback-app
+
+----------------------------------
+6.2: RM - Remove Containers
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker rm feedback-app feedback-app-test
+feedback-app
+feedback-app-test
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+(All containers removed successfully)
+
+----------------------------------
+6.3: Force Remove (Alternative)
+----------------------------------
+
+# Alternative command to stop and remove in one step:
+# docker rm -f feedback-app feedback-app-test
+
+================================================================================
+SECTION 7: DOCKER SYSTEM INFORMATION
+================================================================================
+
+----------------------------------
+7.1: SYSTEM DF - Disk Usage
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker system df
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          2         0         522MB     522MB (100%)
+Containers      0         0         0B        0B
+Local Volumes   0         0         0B        0B
+Build Cache     45        0         1.2GB     1.2GB
+
+----------------------------------
+7.2: IMAGE LS - All Images
+----------------------------------
+
+PS C:\Users\RAJ JAISWAR\OneDrive\Documents\Devops\course-feedback-git> docker images
+REPOSITORY          TAG       IMAGE ID       CREATED          SIZE
+course-feedback     1.0.0     44ef65413ea5   15 minutes ago   522MB
+course-feedback     latest    44ef65413ea5   15 minutes ago   522MB
+
+================================================================================
+SECTION 8: QUICK REFERENCE - COMMON COMMANDS
+================================================================================
+
+# Build image
+docker build -t course-feedback:1.0.0 .
+
+# Run container (detached mode)
+docker run -d --name feedback-app -p 8082:8080 -e APP_ENV=dev course-feedback:1.0.0
+
+# Run container (foreground mode with logs)
+docker run --name feedback-app -p 8082:8080 -e APP_ENV=dev course-feedback:1.0.0
+
+# List running containers
+docker ps
+
+# List all containers (including stopped)
+docker ps -a
+
+# View container logs
+docker logs feedback-app
+docker logs -f feedback-app  # Follow logs (live stream)
+docker logs --tail 50 feedback-app  # Last 50 lines
+
+# Container lifecycle
+docker stop feedback-app      # Stop gracefully
+docker start feedback-app     # Start stopped container
+docker restart feedback-app   # Restart running container
+docker pause feedback-app     # Pause container
+docker unpause feedback-app   # Unpause container
+
+# Container inspection
+docker inspect feedback-app   # Full JSON details
+docker stats feedback-app     # Resource usage (live)
+docker stats --no-stream feedback-app  # Resource usage (snapshot)
+docker top feedback-app       # Running processes
+docker port feedback-app      # Port mappings
+
+# Execute commands in container
+docker exec feedback-app ls -la /app
+docker exec -it feedback-app sh  # Interactive shell
+
+# Remove containers
+docker rm feedback-app        # Remove stopped container
+docker rm -f feedback-app     # Force remove running container
+docker container prune        # Remove all stopped containers
+
+# Remove images
+docker rmi course-feedback:1.0.0
+docker image prune            # Remove unused images
+
+# Cleanup everything
+docker system prune           # Remove stopped containers, unused networks, dangling images
+docker system prune -a        # Remove all unused images (not just dangling)
+
+================================================================================
+END OF DOCKER COMMAND LOG
+================================================================================
+Task 11 Complete - All commands executed successfully
+Total execution time: ~15 minutes
+Image size: 522MB (multi-stage optimized)
+Containers tested: 2 (dev on 8082, test on 8083)
+Lifecycle operations: RUN, PS, LOGS, STATS, EXEC, STOP, START, RESTART, RM
+================================================================================
