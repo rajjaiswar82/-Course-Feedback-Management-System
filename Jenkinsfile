@@ -317,28 +317,32 @@ pipeline {
             }
         }
         success {
-            echo "========================================="
-            echo "✅ PIPELINE COMPLETED SUCCESSFULLY!"
-            echo "========================================="
-            if (params.RUN_UI_TESTS) {
-                echo "✅ All UI tests passed"
+            script {
+                echo "========================================="
+                echo "✅ PIPELINE COMPLETED SUCCESSFULLY!"
+                echo "========================================="
+                if (params.RUN_UI_TESTS) {
+                    echo "✅ All UI tests passed"
+                }
+                if (!params.SKIP_DEPLOY) {
+                    echo "✅ Deployed to: ${params.DEPLOY_ENV}"
+                    echo "🌐 Application URL: ${APP_URL}"
+                }
+                echo "========================================="
             }
-            if (!params.SKIP_DEPLOY) {
-                echo "✅ Deployed to: ${params.DEPLOY_ENV}"
-                echo "🌐 Application URL: ${APP_URL}"
-            }
-            echo "========================================="
         }
         failure {
-            echo "========================================="
-            echo "❌ PIPELINE FAILED!"
-            echo "========================================="
-            if (params.RUN_UI_TESTS) {
-                echo "⚠️  Check Selenium test results for failures"
-                echo "📊 Test reports available in Jenkins artifacts"
+            script {
+                echo "========================================="
+                echo "❌ PIPELINE FAILED!"
+                echo "========================================="
+                if (params.RUN_UI_TESTS) {
+                    echo "⚠️  Check Selenium test results for failures"
+                    echo "📊 Test reports available in Jenkins artifacts"
+                }
+                echo "📝 Check the console logs for details"
+                echo "========================================="
             }
-            echo "📝 Check the console logs for details"
-            echo "========================================="
         }
     }
 }
