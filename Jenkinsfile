@@ -22,6 +22,16 @@ pipeline {
             defaultValue: false,
             description: 'Skip deployment stage'
         )
+        booleanParam(
+            name: 'RUN_UI_TESTS',
+            defaultValue: true,
+            description: 'Run Selenium UI tests before deployment'
+        )
+        string(
+            name: 'TEST_BASE_URL',
+            defaultValue: 'http://localhost:8081',
+            description: 'Base URL for Selenium tests (TEST environment)'
+        )
     }
     
     environment {
@@ -31,6 +41,9 @@ pipeline {
         // Deployment directory based on environment
         DEPLOY_DIR = "C:\\\\Jenkins\\\\deployments\\\\${params.DEPLOY_ENV}"
         APP_URL = "http://localhost:${params.APP_PORT}"
+        // TEST environment for Selenium tests
+        TEST_DEPLOY_DIR = "C:\\\\Jenkins\\\\deployments\\\\test"
+        TEST_PORT = "8081"
     }
     
     stages {
@@ -50,14 +63,6 @@ pipeline {
             }
         }
         
-        // TODO: Insert Test stage here for Task 9-10 (Selenium automated tests)
-        // stage('Test') {
-        //     steps {
-        //         echo "Running automated tests..."
-        //         bat 'mvn test'
-        //     }
-        // }
-        
         stage('Package') {
             steps {
                 echo "Packaging the application..."
@@ -70,14 +75,141 @@ pipeline {
             }
         }
         
-        stage('Deploy') {
+        stage('Deploy to TEST') {
             when {
-                expression { return !params.SKIP_DEPLOY }
+                expression { return params.RUN_UI_TESTS }
             }
             steps {
                 script {
                     echo "========================================="
-                    echo "DEPLOYMENT CONFIGURATION"
+                    echo "DEPLOYING TO TEST ENVIRONMENT FOR UI TESTING"
+                    echo "Port: ${TEST_PORT}"
+                    echo "Deploy Directory: ${TEST_DEPLOY_DIR}"
+                    echo "========================================="
+                    
+                    // Create TEST deployment directory
+                    bat """
+                        if not exist "${TEST_DEPLOY_DIR}" mkdir "${TEST_DEPLOY_DIR}"
+                    """
+                    
+                    // Stop existing TEST application if running
+                    bat """
+                        @echo off
+                        echo Stopping existing TEST application on port ${TEST_PORT}...
+                        for /f "tokens=5" %%a in ('netstat -ano ^| findstr :${TEST_PORT} ^| findstr LISTENING') do (
+                            echo Killing process %%a
+                            taskkill /F /PID %%a 2>nul
+                        )
+                        exit 0
+                    """
+                    
+                    // Copy artifact to TEST deployment directory
+                    bat """
+                        copy /Y "target\\${ARTIFACT_NAME}" "${TEST_DEPLOY_DIR}\\"
+                        echo Artifact copied to TEST deployment directory
+                    """
+                    
+                    // Create TEST environment configuration
+                    bat """
+                        echo server.port=${TEST_PORT} > "${TEST_DEPLOY_DIR}\\application.properties"
+                        echo app.environment=test >> "${TEST_DEPLOY_DIR}\\application.properties"
+                        echo info.app.environment=test >> "${TEST_DEPLOY_DIR}\\application.properties"
+                    """
+                    
+                    // Start the TEST application
+                    bat """
+                        @echo off
+                        cd "${TEST_DEPLOY_DIR}"
+                        echo Starting TEST application...
+                        start /B java -jar -Dserver.port=${TEST_PORT} "${ARTIFACT_NAME}" > app-test.log 2>&1
+                        echo TEST application started
+                    """
+                    
+                    echo "TEST deployment initiated - waiting for health check..."
+                }
+            }
+        }
+        
+        stage('Health Check') {
+            when {
+                expression { return params.RUN_UI_TESTS }
+            }
+            steps {
+                script {
+                    echo "========================================="
+                    echo "HEALTH CHECK: Waiting for TEST app to be ready"
+                    echo "URL: ${params.TEST_BASE_URL}"
+                    echo "========================================="
+                    
+                    // Wait for application to be ready (retry up to 30 times, 2 seconds each = 60 seconds max)
+                    def maxRetries = 30
+                    def retryDelay = 2
+                    def ready = false
+                    
+                    for (int i = 1; i <= maxRetries; i++) {
+                        try {
+                            bat """
+                                @echo off
+                                curl -f -s -o nul ${params.TEST_BASE_URL}
+                            """
+                            echo "✅ TEST application is ready! (attempt ${i}/${maxRetries})"
+                            ready = true
+                            break
+                        } catch (Exception e) {
+                            echo "⏳ Waiting for application... (attempt ${i}/${maxRetries})"
+                            if (i < maxRetries) {
+                                sleep(retryDelay)
+                            }
+                        }
+                    }
+                    
+                    if (!ready) {
+                        error("❌ TEST application did not respond after ${maxRetries * retryDelay} seconds")
+                    }
+                    
+                    echo "========================================="
+                    echo "Health check passed - ready for testing"
+                    echo "========================================="
+                }
+            }
+        }
+        
+        stage('Run Selenium Tests') {
+            when {
+                expression { return params.RUN_UI_TESTS }
+            }
+            steps {
+                script {
+                    echo "========================================="
+                    echo "RUNNING SELENIUM UI TESTS"
+                    echo "Base URL: ${params.TEST_BASE_URL}"
+                    echo "Browser: Chrome (Headless)"
+                    echo "========================================="
+                    
+                    // Run Selenium tests in headless mode
+                    // NOTE: This stage will FAIL if any test fails - this is intentional
+                    bat """
+                        mvn test -Pselenium -Dbase.url=${params.TEST_BASE_URL} -Dbrowser=chrome -Dheadless=true
+                    """
+                    
+                    echo "========================================="
+                    echo "✅ ALL SELENIUM TESTS PASSED"
+                    echo "========================================="
+                }
+            }
+        }
+        
+        stage('Deploy to Final Environment') {
+            when {
+                allOf {
+                    expression { return !params.SKIP_DEPLOY }
+                    expression { return currentBuild.result != 'FAILURE' }
+                }
+            }
+            steps {
+                script {
+                    echo "========================================="
+                    echo "DEPLOYING TO FINAL ENVIRONMENT"
                     echo "Environment: ${params.DEPLOY_ENV}"
                     echo "Port: ${params.APP_PORT}"
                     echo "Deploy Directory: ${DEPLOY_DIR}"
@@ -129,7 +261,7 @@ pipeline {
                     """
                     
                     echo "========================================="
-                    echo "DEPLOYMENT SUCCESSFUL!"
+                    echo "✅ DEPLOYMENT SUCCESSFUL!"
                     echo "Application URL: ${APP_URL}"
                     echo "Environment: ${params.DEPLOY_ENV}"
                     echo "Deployment Directory: ${DEPLOY_DIR}"
@@ -141,18 +273,72 @@ pipeline {
     }
     
     post {
+        always {
+            script {
+                echo "========================================="
+                echo "POST-BUILD ACTIONS"
+                echo "========================================="
+                
+                // Publish JUnit test results (if tests were run)
+                if (params.RUN_UI_TESTS) {
+                    echo "Publishing JUnit test results..."
+                    junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+                    
+                    // Archive test artifacts: screenshots and logs
+                    echo "Archiving test screenshots and artifacts..."
+                    archiveArtifacts artifacts: '**/target/screenshots/**, **/target/surefire-reports/**', allowEmptyArchive: true
+                    
+                    // Publish HTML test report (if exists)
+                    echo "Publishing HTML test report..."
+                    publishHTML([
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'target/surefire-reports',
+                        reportFiles: 'index.html',
+                        reportName: 'Selenium Test Report',
+                        reportTitles: 'Selenium UI Tests'
+                    ])
+                    
+                    // Stop TEST environment application
+                    echo "Cleaning up TEST environment..."
+                    bat """
+                        @echo off
+                        echo Stopping TEST application on port ${TEST_PORT}...
+                        for /f "tokens=5" %%a in ('netstat -ano ^| findstr :${TEST_PORT} ^| findstr LISTENING') do (
+                            echo Killing TEST process %%a
+                            taskkill /F /PID %%a 2>nul
+                        )
+                        exit 0
+                    """
+                }
+                
+                echo "Post-build actions completed."
+            }
+        }
         success {
-            echo "✅ Pipeline completed successfully!"
-            echo "Environment: ${params.DEPLOY_ENV}"
-            echo "Application URL: ${APP_URL}"
+            echo "========================================="
+            echo "✅ PIPELINE COMPLETED SUCCESSFULLY!"
+            echo "========================================="
+            if (params.RUN_UI_TESTS) {
+                echo "✅ All UI tests passed"
+            }
+            if (!params.SKIP_DEPLOY) {
+                echo "✅ Deployed to: ${params.DEPLOY_ENV}"
+                echo "🌐 Application URL: ${APP_URL}"
+            }
+            echo "========================================="
         }
         failure {
-            echo "❌ Pipeline failed! Check the logs for details."
-        }
-        always {
-            echo "Pipeline execution finished."
-            // Optional: Clean workspace
-            // cleanWs()
+            echo "========================================="
+            echo "❌ PIPELINE FAILED!"
+            echo "========================================="
+            if (params.RUN_UI_TESTS) {
+                echo "⚠️  Check Selenium test results for failures"
+                echo "📊 Test reports available in Jenkins artifacts"
+            }
+            echo "📝 Check the console logs for details"
+            echo "========================================="
         }
     }
 }
