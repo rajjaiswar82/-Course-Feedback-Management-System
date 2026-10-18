@@ -105,11 +105,20 @@
                             <excludes>
                                 <exclude>none</exclude>
                             </excludes>
-                            <systemPropertyVariables>
-                                <base.url>${base.url}</base.url>
-                                <browser>${browser}</browser>
-                                <headless>${headless}</headless>
-                            </systemPropertyVariables>
+                            <systemProperties>
+                                <property>
+                                    <name>base.url</name>
+                                    <value>http://localhost:8080</value>
+                                </property>
+                                <property>
+                                    <name>browser</name>
+                                    <value>chrome</value>
+                                </property>
+                                <property>
+                                    <name>headless</name>
+                                    <value>false</value>
+                                </property>
+                            </systemProperties>
                         </configuration>
                     </plugin>
                     <plugin>
