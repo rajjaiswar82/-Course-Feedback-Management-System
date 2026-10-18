@@ -23,25 +23,25 @@
       </section>
 
       <section class="feedback-grid">
-        <article class="panel">
+        <article id="total-feedback" class="panel">
           <p class="eyebrow">TOTAL FEEDBACK</p>
           <h2 th:text="${totalFeedback}">0</h2>
           <p class="muted">All feedback records</p>
         </article>
 
-        <article class="panel">
+        <article id="submitted-count" class="panel">
           <p class="eyebrow">SUBMITTED</p>
           <h2 th:text="${submittedCount}">0</h2>
           <p class="muted">Awaiting review</p>
         </article>
 
-        <article class="panel">
+        <article id="reviewed-count" class="panel">
           <p class="eyebrow">REVIEWED</p>
           <h2 th:text="${reviewedCount}">0</h2>
           <p class="muted">Feedback reviewed</p>
         </article>
 
-        <article class="panel">
+        <article id="average-rating" class="panel">
           <p class="eyebrow">AVERAGE RATING</p>
           <h2 th:text="${#numbers.formatDecimal(averageRating, 1, 2)}">0.00</h2>
           <p class="muted">Out of 5</p>
