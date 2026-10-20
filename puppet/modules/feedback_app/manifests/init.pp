@@ -26,8 +26,8 @@ class feedback_app (
   Enum['dev', 'test', 'prod'] $app_env = 'dev',
   String $app_user       = 'feedbackapp',
   String $app_group      = 'feedbackapp',
-  Stdlib::Absolutepath $app_dir = '/opt/course-feedback',
-  Stdlib::Absolutepath $log_dir = '/var/log/course-feedback',
+  String $app_dir        = '/opt/course-feedback',
+  String $log_dir        = '/var/log/course-feedback',
   String $container_name = 'feedback-app',
   String $java_opts      = '-Xms256m -Xmx512m',
 ) {
@@ -35,6 +35,14 @@ class feedback_app (
   # Validate parameters
   assert_type(String[1], $image_name)
   assert_type(String[1], $image_tag)
+
+  # Validate absolute paths
+  unless $app_dir =~ /^\/.*/ {
+    fail("app_dir must be an absolute path, got: ${app_dir}")
+  }
+  unless $log_dir =~ /^\/.*/ {
+    fail("log_dir must be an absolute path, got: ${log_dir}")
+  }
 
   # Include subclasses in correct order
   contain feedback_app::install
