@@ -79,11 +79,14 @@ public abstract class BaseUITest {
                 // Chrome is default
                 ChromeOptions options = new ChromeOptions();
                 if (headless) {
-                    options.addArguments("--headless");
+                    options.addArguments("--headless=new");
                 }
                 options.addArguments("--disable-gpu");
                 options.addArguments("--no-sandbox");
                 options.addArguments("--disable-dev-shm-usage");
+                options.addArguments("--remote-allow-origins=*");
+                options.addArguments("--window-size=1920,1080");
+                options.addArguments("--disable-extensions");
                 yield new ChromeDriver(options);
             }
         };

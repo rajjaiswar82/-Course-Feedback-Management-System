@@ -6,6 +6,12 @@ import in.college.coursefeedback.ui.pages.LoginPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,8 +43,26 @@ public class FeedbackStatusWorkflowUITest extends BaseUITest {
         formPage.navigateTo(baseUrl);
         formPage.fillAndSubmit(testStudent, testCourse, "4", "Test feedback for status workflow");
         
-        // Logout by navigating to login page
+        // Logout - Spring Security 6 GET /logout shows confirmation page; click the button
+        performLogout();
+    }
+
+    /**
+     * Perform logout by navigating to /logout and clicking the confirmation button,
+     * or clearing cookies if the confirmation page is not available.
+     */
+    private void performLogout() {
         driver.get(baseUrl + "/logout");
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+            WebElement logoutButton = wait.until(
+                ExpectedConditions.elementToBeClickable(By.cssSelector("button[type='submit']"))
+            );
+            logoutButton.click();
+        } catch (Exception e) {
+            // Fallback: clear cookies to end session
+            driver.manage().deleteAllCookies();
+        }
     }
 
     @Test
