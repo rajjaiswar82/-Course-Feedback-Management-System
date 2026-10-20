@@ -6,7 +6,7 @@ class feedback_app::user {
     ensure => present,
     system => true,
   }
-  
+
   # Create system user
   user { $feedback_app::app_user:
     ensure     => present,
@@ -19,7 +19,7 @@ class feedback_app::user {
     groups     => ['docker'],
     require    => [Group[$feedback_app::app_group], Package['docker.io']],
   }
-  
+
   # Create application directories
   file { $feedback_app::app_dir:
     ensure  => directory,
@@ -28,7 +28,7 @@ class feedback_app::user {
     mode    => '0755',
     require => User[$feedback_app::app_user],
   }
-  
+
   file { "${feedback_app::app_dir}/config":
     ensure  => directory,
     owner   => $feedback_app::app_user,
@@ -36,7 +36,7 @@ class feedback_app::user {
     mode    => '0750',
     require => File[$feedback_app::app_dir],
   }
-  
+
   file { "${feedback_app::app_dir}/releases":
     ensure  => directory,
     owner   => $feedback_app::app_user,
@@ -44,7 +44,7 @@ class feedback_app::user {
     mode    => '0755',
     require => File[$feedback_app::app_dir],
   }
-  
+
   file { $feedback_app::log_dir:
     ensure  => directory,
     owner   => $feedback_app::app_user,

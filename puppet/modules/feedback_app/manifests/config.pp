@@ -15,7 +15,7 @@ class feedback_app::config {
     require => File["${feedback_app::app_dir}/config"],
     notify  => Service['feedback-app'],
   }
-  
+
   # Systemd unit file
   file { '/etc/systemd/system/feedback-app.service':
     ensure  => file,
@@ -35,13 +35,13 @@ class feedback_app::config {
     require => File["${feedback_app::app_dir}/config/app.env"],
     notify  => Exec['systemd-reload'],
   }
-  
+
   # Reload systemd when unit file changes
   exec { 'systemd-reload':
     command     => '/bin/systemctl daemon-reload',
     refreshonly => true,
   }
-  
+
   # Current version marker (for rollback tracking)
   file { "${feedback_app::app_dir}/releases/current-version.txt":
     ensure  => file,

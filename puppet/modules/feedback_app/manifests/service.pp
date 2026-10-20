@@ -6,7 +6,7 @@ class feedback_app::service {
     ensure => running,
     enable => true,
   }
-  
+
   # Manage application service
   service { 'feedback-app':
     ensure    => running,
@@ -19,13 +19,18 @@ class feedback_app::service {
     ],
     subscribe => File['/etc/systemd/system/feedback-app.service'],
   }
-  
+
   # Health check (verify container is running)
+  $health_url = "http://localhost:${feedback_app::container_port}/"
+  $health_cmd = "/usr/bin/curl -f -s -o /dev/null -w '%{http_code}' ${health_url} | /bin/grep -q '200\\|302'"
+  $container_check = "/usr/bin/docker ps --filter name=${feedback_app::container_name} --filter status=running"
+  $container_running = "${container_check} --format '{{.Names}}' | /bin/grep -q ${feedback_app::container_name}"
+
   exec { 'health-check':
-    command => "/usr/bin/curl -f -s -o /dev/null -w '%{http_code}' http://localhost:${feedback_app::container_port}/ | /bin/grep -q '200\\|302'",
-    tries   => 10,
+    command   => $health_cmd,
+    tries     => 10,
     try_sleep => 5,
-    require => Service['feedback-app'],
-    unless  => "/usr/bin/docker ps --filter name=${feedback_app::container_name} --filter status=running --format '{{.Names}}' | /bin/grep -q ${feedback_app::container_name}",
+    require   => Service['feedback-app'],
+    unless    => $container_running,
   }
 }

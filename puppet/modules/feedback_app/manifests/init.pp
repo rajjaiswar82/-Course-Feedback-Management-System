@@ -31,23 +31,23 @@ class feedback_app (
   String $container_name = 'feedback-app',
   String $java_opts      = '-Xms256m -Xmx512m',
 ) {
-  
+
   # Validate parameters
   assert_type(String[1], $image_name)
   assert_type(String[1], $image_tag)
-  
+
   # Include subclasses in correct order
   contain feedback_app::install
   contain feedback_app::user
   contain feedback_app::config
   contain feedback_app::service
-  
+
   # Define resource ordering
   Class['feedback_app::install']
   -> Class['feedback_app::user']
   -> Class['feedback_app::config']
   -> Class['feedback_app::service']
-  
+
   # Success notification
   notify { 'Feedback App Configuration Complete':
     message => "Course Feedback app configured: ${image_name}:${image_tag} on port ${container_port}",
