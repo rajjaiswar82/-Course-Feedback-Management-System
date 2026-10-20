@@ -1,0 +1,15 @@
+---
+# Default parameter values for feedback_app module
+# Can be overridden per node or environment
+
+feedback_app::image_name: 'rajjaiswar/course-feedback'
+feedback_app::image_tag: 'latest'
+feedback_app::registry: 'docker.io'
+feedback_app::container_port: 8083
+feedback_app::app_env: 'dev'
+feedback_app::app_user: 'feedbackapp'
+feedback_app::app_group: 'feedbackapp'
+feedback_app::app_dir: '/opt/course-feedback'
+feedback_app::log_dir: '/var/log/course-feedback'
+feedback_app::container_name: 'feedback-app'
+feedback_app::java_opts: '-Xms256m -Xmx512m'

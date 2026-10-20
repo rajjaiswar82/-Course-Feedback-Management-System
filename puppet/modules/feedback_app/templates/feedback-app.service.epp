@@ -1,0 +1,55 @@
+<%- | String $app_user,
+      String $app_dir,
+      String $image_name,
+      String $image_tag,
+      String $container_name,
+      Integer $container_port,
+      String $app_env,
+      String $java_opts,
+| -%>
+[Unit]
+Description=Course Feedback Management System
+Documentation=https://github.com/rajjaiswar82/-Course-Feedback-Management-System
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=<%= $app_user %>
+WorkingDirectory=<%= $app_dir %>
+
+# Environment variables
+Environment=IMAGE_NAME=<%= $image_name %>
+Environment=IMAGE_TAG=<%= $image_tag %>
+Environment=CONTAINER_NAME=<%= $container_name %>
+Environment=CONTAINER_PORT=<%= $container_port %>
+Environment=APP_ENV=<%= $app_env %>
+Environment=JAVA_OPTS=<%= $java_opts %>
+
+# Pull latest image
+ExecStartPre=/usr/bin/docker pull ${IMAGE_NAME}:${IMAGE_TAG}
+
+# Stop and remove old container if exists
+ExecStartPre=-/usr/bin/docker stop ${CONTAINER_NAME}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER_NAME}
+
+# Start new container
+ExecStart=/usr/bin/docker run \
+  --name ${CONTAINER_NAME} \
+  -p ${CONTAINER_PORT}:8080 \
+  -e APP_ENV=${APP_ENV} \
+  -e JAVA_OPTS="${JAVA_OPTS}" \
+  --restart unless-stopped \
+  --detach \
+  ${IMAGE_NAME}:${IMAGE_TAG}
+
+# Stop container on service stop
+ExecStop=/usr/bin/docker stop ${CONTAINER_NAME}
+
+# Restart policy
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
