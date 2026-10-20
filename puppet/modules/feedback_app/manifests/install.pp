@@ -31,7 +31,7 @@ class feedback_app::install {
     ensure  => installed,
     require => Exec['apt-update'],
   }
-  
+
   # Ensure Docker service is enabled and running
   service { 'docker':
     ensure  => running,
