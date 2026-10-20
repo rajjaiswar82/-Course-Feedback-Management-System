@@ -1,12 +1,6 @@
 # Manage application service
 # @api private
 class feedback_app::service {
-  # Ensure Docker service is running
-  service { 'docker':
-    ensure => running,
-    enable => true,
-  }
-
   # Manage application service
   service { 'feedback-app':
     ensure    => running,
