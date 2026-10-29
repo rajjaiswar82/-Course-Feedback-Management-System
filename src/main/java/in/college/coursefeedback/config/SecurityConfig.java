@@ -44,10 +44,18 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/styles.css", "/error").permitAll()
                 .anyRequest().permitAll()
             )
-            .formLogin(form -> form.disable())
-            .logout(logout -> logout.disable())
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/home", true)
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutSuccessUrl("/login?logout")
+                .permitAll()
+            )
             .csrf(csrf -> csrf.disable());
 
         return http.build();

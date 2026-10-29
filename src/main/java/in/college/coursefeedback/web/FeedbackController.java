@@ -31,6 +31,11 @@ public class FeedbackController {
 
     @GetMapping("/home")
     public String roleBasedHome(Authentication authentication) {
+        
+        // If no authentication (security disabled), show feedback list
+        if (authentication == null) {
+            return "redirect:/feedback/new";
+        }
 
         boolean isAdmin = authentication.getAuthorities()
                 .stream()
