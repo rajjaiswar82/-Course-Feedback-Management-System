@@ -44,35 +44,11 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/styles.css", "/error", "/login").permitAll()
-
-                .requestMatchers(
-                    "/feedback/edit/**",
-                    "/feedback/update/**",
-                    "/feedback/delete/**",
-                    "/feedback/status/**",
-                    "/dashboard"
-                ).hasRole("ADMIN")
-
-                .requestMatchers(
-                    "/",
-                    "/home",
-                    "/feedback",
-                    "/feedback/new"
-                ).hasAnyRole("STUDENT", "ADMIN")
-
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
-
-            .formLogin(form -> form
-                .defaultSuccessUrl("/home", true)
-                .permitAll()
-            )
-
-            .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout")
-                .permitAll()
-            );
+            .formLogin(form -> form.disable())
+            .logout(logout -> logout.disable())
+            .csrf(csrf -> csrf.disable());
 
         return http.build();
     }
