@@ -3,27 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login | Course Feedback</title>
+    <title>Sign In | Course Feedback</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+        }
+        
+        .login-container::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            bottom: -150px;
+            left: -150px;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 50px 40px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .login-logo {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        
+        .login-subtitle {
+            color: var(--muted);
+            font-size: 1rem;
+        }
+        
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        
+        .alert-success {
+            background: var(--success);
+            color: var(--success-dark);
+            border: 1px solid rgba(22, 163, 74, 0.2);
+        }
+        
+        .credentials-demo {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 2px dashed var(--line);
+        }
+        
+        .credentials-demo h3 {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .credential-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(139, 92, 246, 0.1));
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--brand);
+        }
+        
+        .credential-box:last-child {
+            border-left-color: #8b5cf6;
+            margin-bottom: 0;
+        }
+        
+        .credential-role {
+            font-weight: 800;
+            color: var(--brand);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .credential-info {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--ink-light);
+            line-height: 1.6;
+        }
+        
+        .credential-info strong {
+            color: var(--ink);
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            color: var(--muted-light);
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
 <body>
-<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
-    <div class="panel" style="max-width: 480px; width: 100%; padding: 60px 50px;">
-        
-        <!-- Logo/Brand -->
-        <div style="text-align: center; margin-bottom: 40px;">
-            <div class="brand" style="font-size: 2.5rem; margin-bottom: 12px;">Course Feedback</div>
-            <p class="muted" style="font-size: 1rem;">Sign in to manage feedback</p>
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-logo">📚 Course Feedback</div>
+            <p class="login-subtitle">Sign in to continue</p>
         </div>
 
         <!-- Error Message -->
-        <div th:if="${param.error}" class="error" style="background: var(--danger); color: var(--danger-dark); padding: 16px; border-radius: var(--radius); margin-bottom: 24px; border: 2px solid var(--danger-dark);">
-            ⚠ Invalid username or password
+        <div th:if="${error}" class="alert alert-error">
+            <span>⚠️</span>
+            <span>Invalid username or password. Please try again.</span>
         </div>
 
         <!-- Logout Message -->
-        <div th:if="${param.logout}" class="success" style="margin-bottom: 24px;">
-            ✓ You have been logged out successfully
+        <div th:if="${logout}" class="alert alert-success">
+            <span>✓</span>
+            <span>You have been logged out successfully.</span>
         </div>
 
         <!-- Login Form -->
@@ -36,8 +181,8 @@
                     name="username" 
                     required 
                     autofocus
-                    placeholder="Enter your username"
-                    style="font-size: 1.05rem;">
+                    autocomplete="username"
+                    placeholder="Enter your username">
             </div>
 
             <div class="field">
@@ -47,44 +192,39 @@
                     type="password" 
                     name="password" 
                     required
-                    placeholder="Enter your password"
-                    style="font-size: 1.05rem;">
+                    autocomplete="current-password"
+                    placeholder="Enter your password">
             </div>
 
-            <button type="submit" class="button" style="width: 100%; margin-top: 12px; padding: 18px;">
-                Sign In
+            <button type="submit" class="button" style="width: 100%; margin-top: 8px;">
+                Sign In →
             </button>
         </form>
 
         <!-- Demo Credentials -->
-        <div style="margin-top: 40px; padding-top: 32px; border-top: 2px dashed var(--line);">
-            <p style="text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 16px; font-weight: 600;">
-                Demo Credentials
-            </p>
+        <div class="credentials-demo">
+            <h3>Demo Accounts</h3>
             
-            <div style="display: grid; gap: 12px;">
-                <div style="background: var(--background-alt); padding: 14px; border-radius: var(--radius); border-left: 4px solid var(--brand);">
-                    <div style="font-weight: 700; color: var(--brand); font-size: 0.85rem; margin-bottom: 6px;">👤 STUDENT</div>
-                    <div style="font-family: 'Courier New', monospace; font-size: 0.9rem; color: var(--ink-light);">
-                        <div>Username: <strong>student</strong></div>
-                        <div>Password: <strong>Student@123</strong></div>
-                    </div>
+            <div class="credential-box">
+                <div class="credential-role">👤 STUDENT ACCESS</div>
+                <div class="credential-info">
+                    <div>Username: <strong>student</strong></div>
+                    <div>Password: <strong>Student@123</strong></div>
                 </div>
+            </div>
 
-                <div style="background: var(--background-alt); padding: 14px; border-radius: var(--radius); border-left: 4px solid #8b5cf6;">
-                    <div style="font-weight: 700; color: #8b5cf6; font-size: 0.85rem; margin-bottom: 6px;">👨‍💼 ADMIN</div>
-                    <div style="font-family: 'Courier New', monospace; font-size: 0.9rem; color: var(--ink-light);">
-                        <div>Username: <strong>admin</strong></div>
-                        <div>Password: <strong>Admin@123</strong></div>
-                    </div>
+            <div class="credential-box">
+                <div class="credential-role" style="color: #8b5cf6;">👨‍💼 ADMIN ACCESS</div>
+                <div class="credential-info">
+                    <div>Username: <strong>admin</strong></div>
+                    <div>Password: <strong>Admin@123</strong></div>
                 </div>
             </div>
         </div>
 
-        <!-- Help Text -->
-        <p style="text-align: center; margin-top: 32px; color: var(--muted-light); font-size: 0.85rem;">
-            For demo purposes only • Task 15 Final Release
-        </p>
+        <div class="login-footer">
+            Task 15 - Final Release Demo
+        </div>
     </div>
 </div>
 </body>
