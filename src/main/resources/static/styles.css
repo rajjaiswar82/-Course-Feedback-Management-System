@@ -91,7 +91,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Animated gradient background */
+/* Subtle static gradient background */
 body::before {
     content: '';
     position: fixed;
@@ -99,18 +99,10 @@ body::before {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(251, 146, 60, 0.05) 0%, transparent 50%);
-    animation: gradientShift 15s ease infinite;
+    background: radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
     z-index: -1;
     pointer-events: none;
-}
-
-@keyframes gradientShift {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(5%, -5%) rotate(120deg); }
-    66% { transform: translate(-5%, 5%) rotate(240deg); }
 }
 
 a {
@@ -158,35 +150,12 @@ html {
     font-size: 1.75rem;
     font-weight: 900;
     letter-spacing: -0.03em;
-    background: var(--hero-gradient);
+    background: var(--brand-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    background-size: 200% auto;
-    animation: gradientText 3s ease infinite;
     position: relative;
     padding: 8px 0;
-}
-
-.brand::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 3px;
-    background: var(--brand-gradient);
-    transition: var(--transition);
-    border-radius: 2px;
-}
-
-.brand:hover::after {
-    width: 100%;
-}
-
-@keyframes gradientText {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
 }
 
 .topbar nav {
@@ -252,7 +221,6 @@ html {
 .hero {
     margin-bottom: 60px;
     position: relative;
-    animation: fadeInUp 0.8s ease-out;
 }
 
 .eyebrow {
@@ -267,13 +235,6 @@ html {
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(139, 92, 246, 0.1));
     border-radius: var(--radius-full);
     border: 2px solid rgba(102, 126, 234, 0.2);
-    backdrop-filter: blur(10px);
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
 }
 
 h1 {
@@ -286,8 +247,6 @@ h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    background-size: 200% auto;
-    animation: gradientText 4s ease infinite;
     position: relative;
 }
 
@@ -300,12 +259,6 @@ h1::after {
     height: 6px;
     background: var(--brand-gradient);
     border-radius: var(--radius-full);
-    animation: expand 2s ease-in-out infinite;
-}
-
-@keyframes expand {
-    0%, 100% { width: 120px; opacity: 0.6; }
-    50% { width: 180px; opacity: 1; }
 }
 
 h2 {
@@ -325,16 +278,7 @@ h2 {
     max-width: 700px;
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+/* Removed excessive animations */
 
 /* ============================================
    Premium Glassmorphic Panels
@@ -352,25 +296,10 @@ h2 {
     position: relative;
 }
 
-.panel::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: var(--transition-slow);
-}
-
 .panel:hover {
     box-shadow: var(--shadow-xl), 0 0 0 2px rgba(102, 126, 234, 0.15);
-    transform: translateY(-8px) scale(1.02);
+    transform: translateY(-4px);
     border-color: rgba(102, 126, 234, 0.3);
-}
-
-.panel:hover::before {
-    left: 100%;
 }
 
 /* ============================================
@@ -391,23 +320,6 @@ h2 {
     flex-direction: column;
     gap: 12px;
     margin-bottom: 32px;
-    animation: slideIn 0.6s ease-out backwards;
-}
-
-.field:nth-child(1) { animation-delay: 0.1s; }
-.field:nth-child(2) { animation-delay: 0.2s; }
-.field:nth-child(3) { animation-delay: 0.3s; }
-.field:nth-child(4) { animation-delay: 0.4s; }
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
 }
 
 label {
@@ -502,27 +414,9 @@ select {
     font-size: 0.9rem;
 }
 
-.button::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.button:hover::before {
-    width: 400px;
-    height: 400px;
-}
-
 .button:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: var(--shadow-xl), 0 0 30px rgba(102, 126, 234, 0.5);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
 }
 
 .button:active {
@@ -597,17 +491,6 @@ select {
     justify-content: center;
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* ============================================
    Stunning Empty State
    ============================================ */
@@ -623,12 +506,6 @@ select {
     font-size: 5rem;
     display: block;
     margin-bottom: 24px;
-    animation: bounce 2s ease-in-out infinite;
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
 }
 
 .empty h2 {
@@ -677,8 +554,8 @@ select {
 
 .feedback-card:hover {
     border-color: transparent;
-    transform: translateY(-12px) scale(1.03);
-    box-shadow: var(--shadow-xl), 0 0 40px rgba(102, 126, 234, 0.3);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl), 0 0 20px rgba(102, 126, 234, 0.2);
 }
 
 .feedback-card:hover::after {
@@ -726,25 +603,8 @@ select {
     overflow: hidden;
 }
 
-.status::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transform: rotate(45deg);
-    animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-}
-
 .status:hover {
-    transform: scale(1.1) rotate(-2deg);
+    transform: scale(1.05);
     box-shadow: var(--shadow-lg);
 }
 
@@ -799,12 +659,6 @@ select {
     right: -25px;
     font-size: 1.5rem;
     color: #fbbf24;
-    animation: star-pulse 2s ease-in-out infinite;
-}
-
-@keyframes star-pulse {
-    0%, 100% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.2); opacity: 1; }
 }
 
 /* ============================================
@@ -1003,23 +857,10 @@ section.feedback-grid h2 {
     letter-spacing: -0.04em;
     position: relative;
     z-index: 1;
-    animation: countUp 1s ease-out;
-}
-
-@keyframes countUp {
-    from {
-        opacity: 0;
-        transform: scale(0.5);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
 }
 
 section.feedback-grid .eyebrow {
     margin: 0 auto 12px;
-    animation: none;
 }
 
 /* ============================================
@@ -1098,40 +939,13 @@ section.feedback-grid .eyebrow {
 }
 
 /* ============================================
-   Epic Staggered Animations
+   Subtle Transitions (No Heavy Animations)
    ============================================ */
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
 
 .panel,
 .feedback-card {
-    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+    opacity: 1;
 }
-
-/* Dramatic stagger for cards */
-.feedback-card:nth-child(1) { animation-delay: 0.1s; }
-.feedback-card:nth-child(2) { animation-delay: 0.15s; }
-.feedback-card:nth-child(3) { animation-delay: 0.2s; }
-.feedback-card:nth-child(4) { animation-delay: 0.25s; }
-.feedback-card:nth-child(5) { animation-delay: 0.3s; }
-.feedback-card:nth-child(6) { animation-delay: 0.35s; }
-.feedback-card:nth-child(7) { animation-delay: 0.4s; }
-.feedback-card:nth-child(8) { animation-delay: 0.45s; }
-
-/* Dashboard metric cards stagger */
-section.feedback-grid .panel:nth-child(1) { animation-delay: 0.1s; }
-section.feedback-grid .panel:nth-child(2) { animation-delay: 0.2s; }
-section.feedback-grid .panel:nth-child(3) { animation-delay: 0.3s; }
-section.feedback-grid .panel:nth-child(4) { animation-delay: 0.4s; }
 
 /* ============================================
    Print Styles
