@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign In | Course Feedback</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+        }
+        
+        .login-container::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            bottom: -150px;
+            left: -150px;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 50px 40px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .login-logo {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        
+        .login-subtitle {
+            color: var(--muted);
+            font-size: 1rem;
+        }
+        
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        
+        .alert-success {
+            background: var(--success);
+            color: var(--success-dark);
+            border: 1px solid rgba(22, 163, 74, 0.2);
+        }
+        
+        .credentials-demo {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 2px dashed var(--line);
+        }
+        
+        .credentials-demo h3 {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .credential-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(139, 92, 246, 0.1));
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--brand);
+        }
+        
+        .credential-box:last-child {
+            border-left-color: #8b5cf6;
+            margin-bottom: 0;
+        }
+        
+        .credential-role {
+            font-weight: 800;
+            color: var(--brand);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .credential-info {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--ink-light);
+            line-height: 1.6;
+        }
+        
+        .credential-info strong {
+            color: var(--ink);
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            color: var(--muted-light);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-logo">📚 Course Feedback</div>
+            <p class="login-subtitle">Sign in to continue</p>
+        </div>
+
+        <!-- Logout Message -->
+        <div th:if="${logout}" class="alert alert-success">
+            <span>✓</span>
+            <span>You have been logged out successfully.</span>
+        </div>
+
+        <!-- Login Form -->
+        <form th:action="@{/login}" method="post">
+            <div class="field">
+                <label for="username">Username</label>
+                <input 
+                    id="username" 
+                    type="text" 
+                    name="username" 
+                    required 
+                    autofocus
+                    autocomplete="username"
+                    placeholder="Enter your username">
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <input 
+                    id="password" 
+                    type="password" 
+                    name="password" 
+                    required
+                    autocomplete="current-password"
+                    placeholder="Enter your password">
+            </div>
+
+            <button type="submit" class="button" style="width: 100%; margin-top: 8px;">
+                Sign In →
+            </button>
+        </form>
+
+        <div class="login-footer" style="margin-top: 32px;">
+            Course Feedback Management System
+        </div>
+    </div>
+</div>
+</body>
+</html>

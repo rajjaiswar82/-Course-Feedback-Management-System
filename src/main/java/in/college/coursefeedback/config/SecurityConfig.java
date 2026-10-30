@@ -44,8 +44,8 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/styles.css", "/error", "/login").permitAll()
-
+                .requestMatchers("/styles.css", "/h2-console/**", "/error").permitAll()
+                .requestMatchers("/login").permitAll()
                 .requestMatchers(
                     "/feedback/edit/**",
                     "/feedback/update/**",
@@ -53,25 +53,29 @@ public class SecurityConfig {
                     "/feedback/status/**",
                     "/dashboard"
                 ).hasRole("ADMIN")
-
                 .requestMatchers(
                     "/",
                     "/home",
-                    "/feedback",
-                    "/feedback/new"
+                    "/feedback/**"
                 ).hasAnyRole("STUDENT", "ADMIN")
-
                 .anyRequest().authenticated()
             )
-
             .formLogin(form -> form
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/home", true)
+                .failureUrl("/login?error=true")
                 .permitAll()
             )
-
             .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout")
+                .logoutSuccessUrl("/login?logout=true")
                 .permitAll()
+            )
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/h2-console/**")
+            )
+            .headers(headers -> headers
+                .frameOptions(frame -> frame.sameOrigin())
             );
 
         return http.build();

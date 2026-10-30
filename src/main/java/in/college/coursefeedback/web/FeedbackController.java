@@ -1,4 +1,3 @@
-
 package in.college.coursefeedback.web;
 
 import in.college.coursefeedback.model.Feedback;
@@ -29,8 +28,26 @@ public class FeedbackController {
         return "redirect:/home";
     }
 
+    @GetMapping("/login")
+    public String login(@RequestParam(required = false) String error,
+                       @RequestParam(required = false) String logout,
+                       Model model) {
+        if (error != null) {
+            model.addAttribute("error", true);
+        }
+        if (logout != null) {
+            model.addAttribute("logout", true);
+        }
+        return "login";
+    }
+
     @GetMapping("/home")
     public String roleBasedHome(Authentication authentication) {
+        
+        // If no authentication, redirect to login
+        if (authentication == null) {
+            return "redirect:/login";
+        }
 
         boolean isAdmin = authentication.getAuthorities()
                 .stream()
