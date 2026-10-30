@@ -490,8 +490,8 @@ For issues and questions:
 
 If you find this project useful, please consider giving it a star on GitHub!
 
----
 
-**Made with ❤️ for DevOps Course - Task 15 Final Release**
 
-Last Updated: October 30, 2026
+
+
+
